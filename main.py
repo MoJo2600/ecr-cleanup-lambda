@@ -118,6 +118,14 @@ def discover_delete_images(regionname):
                     if imageurl == runningimages:
                         if imageurl not in running_sha:
                             running_sha.append(image['imageDigest'])
+            # check for directly referenced sha
+            for running_image in running_containers:
+                running_digest_match = re.search(r"[^@]+$", running_image)
+                if running_digest_match:
+                    running_digest = running_digest_match.group()
+                    if running_digest == running_image:
+                        if image['imageDigest'] not in running_sha:
+                            running_sha.append(image['imageDigest'])
 
         print("Number of running images found {}".format(len(running_sha)))
         ignore_tags_regex = re.compile(IGNORE_TAGS_REGEX)
